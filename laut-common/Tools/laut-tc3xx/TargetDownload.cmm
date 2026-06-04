@@ -1,0 +1,187 @@
+; --------------------------------------------------------------------------------
+; @Title: Script for TC3x7 MPUs on TriBoard-TC3x7
+; @Description: Loads application (possibly multi-core) into flash
+; @Inputs: -File to flash
+;          -Lauterbach scripts dir
+; @Return values: - 0 - OK
+;                 - 1 - FAIL - &fileToFlash - file has not been fully flashed
+;                 - 2 - FAIL - &LautTC3xxScriptsDir - script entered in error handler
+;                 - 3 - FAIL - CPU is not TC3x7
+; --------------------------------------------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;; FOR DEBUG THE SCRIPT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;PBREAK.Set 17.
+;WinExt.WinResist.PLIST
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+GLOBAL &fileToFlash &commonScriptsPath
+ENTRY &fileToFlash &pathToUcbConfig &ucbMode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; SETUP LOG 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DO "&commonScriptsPath\SetupLog.cmm"
+
+ON ERROR GOTO error_label
+
+LOG.open "&fullLogPath" 
+LOG.ON
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; CPU setup
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DO "&commonScriptsPath\tc3x7\TargetAutoDetect.cmm"
+ENTRY &result
+;Check if the CPU is supported one
+IF &result!=0
+(
+  PRINT "Auto detect failed! CPU is use " SYStem.CPU()
+  LOG.CLOSE
+  ENDDO 3
+)
+
+SYStem.Mode.Down
+
+IF hardware.COMBIPROBE()
+(
+  SYStem.CONFIG DEBUGPORTTYPE DAPWIDE
+)
+ELSE
+(
+  SYStem.CONFIG DEBUGPORTTYPE DAP2
+)
+
+; 30 MHZ is tested and works fine. However if there are some issues with the JTAG, it could be decreased to 20 or 10 MHz
+SYStem.JtagClock 30.MHz
+
+; The TriBoard-TC3x7 comes with a TLF35584 power supply
+; This power supply has integrated watchdog functionality which will cut all
+; power if not served correctly. By default this script will disable this
+; watchdog functionality. This includes configuring the QSPI controller as
+; well as writing data to the QSPI.
+
+IF !STATE.POWER()
+(
+  DO "~~/demo/tricore/hardware/triboard-tc3x7/tc377tp/disable_tlf35584.cmm"
+)
+
+SYStem.Mode.Up
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Downloading to target - user select what to download
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Ask the user to pick file for downloading, alternatively the filepath can be hardcoded or provided
+; as script input parameter during launch
+
+;;;;; If argument is "", just remove the quotes.
+IF "&fileToFlash"==""""""
+(
+  &fileToFlash=""
+)
+
+AREA.view
+PRINT "arg1: " %COLOR.RED "&fileToFlash"
+
+LOCAL &suppressUcbDialog;
+&suppressUcbDialog=TRUE()
+
+IF "&pathToUcbConfig"==""
+(
+  &pathToUcbConfig="&commonScriptsPath\tc3x7"
+)
+
+IF "&ucbMode"==""
+(
+  &ucbMode="OFF"
+)
+
+IF "&fileToFlash"==""
+(
+  WinPOS ,,,,,,,, "Choose file for TC"
+  DIALOG.File /~/*.*
+  ENTRY %LINE &fileToFlash
+  &suppressUcbDialog=FALSE()
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Downloading to target - works both for RAM and for Flash
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LOCAL &CURRENT_WORKING_DIR
+LOCAL &progFlash &bmhdResult
+
+//Print current working directory
+&CURRENT_WORKING_DIR = OS.PWD()
+PRINT "Current Working Directory &(CURRENT_WORKING_DIR)"
+
+LOCAL &fileToFlashFormat
+&fileToFlashFormat=FILE.TYPE("&fileToFlash")
+
+; check if application is already in flash and load symbols
+IF "&fileToFlashFormat"=="ELF"
+  Data.LOAD.Elf "&fileToFlash" /DIFF /SingleLineAdjacent /MACRO /GHILLS
+ELSE
+  Data.LOAD.Auto "&fileToFlash" /DIFF /SingleLineAdjacent
+
+IF FOUND()
+(
+  ; ==== Step 1: Program TriCore code ====
+  (
+    ; enable flash programming
+    FLASH.ReProgram ALL
+
+    ; load the selected application
+    IF "&fileToFlashFormat"=="ELF"
+      Data.LOAD.Elf "&fileToFlash" /MACRO /GHILLS
+    ELSE
+      Data.LOAD.Auto "&fileToFlash"
+
+    FLASH.ReProgram OFF
+  )
+
+  ; ==== Step 2: Write UCBs (optional) ====
+  IF "&ucbMode"=="ON"
+  (
+    ; flash UCBs with validity check enabled (first parameter - "1")
+    DO "&commonScriptsPath\ProgramUcbs.cmm" "1" "&fileToFlash" "&pathToUcbConfig"
+  )
+  ELSE
+  (
+    PRINT "UCB programming skipped (ucbMode=&ucbMode)"
+  )
+
+  ; ==== Step 3: Verify programming ====
+
+  Data.LOAD.Auto "&fileToFlash" /DIFF
+  IF FOUND()
+  (
+    ; maybe some sections are still declared as NOP?
+    PRIVATE &diffAddress
+    &diffAddress=TRACK.ADDRESS()
+    PRINT %COLOR.RED "File &fileToFlash has not been fully flashed, difference found at address &diffAddress (check flash declaration)"
+    ENDDO 1
+  )
+  ELSE
+  (
+    PRINT "DOWNLOAD_DONE: Flashing complete and verified."
+  )
+)
+ELSE
+(
+  PRINT "DOWNLOAD_SKIP: Target already contains the same binary. No action taken."
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Script finalization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LOG.CLOSE
+ENDDO 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Error handling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+error_label:
+; reset the error handler
+  ON ERROR
+;close the file
+  PRINT "Closing LOG File due to error" 
+  LOG.CLOSE
+  ENDDO 2

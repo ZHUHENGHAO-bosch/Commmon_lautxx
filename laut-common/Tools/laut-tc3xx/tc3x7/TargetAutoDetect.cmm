@@ -1,0 +1,72 @@
+; --------------------------------------------------------------------------------
+; @Title: Script for TC3x7 MPUs on TriBoard-TC3x7
+; @Description:
+;   CPU auto detect and setup
+;   Return codes - result of the autodetec procedure
+;                - 0 OK
+;                - 1 FAIL - CPU is not TC3x7 
+; --------------------------------------------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;; FOR DEBUG THE SCRIPT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;PBREAK.Set 18.
+;WinExt.WinResist.PLIST
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; CPU setup
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GLOBAL &commonScriptsPath
+LOCAL &NoOfCores
+
+;;;;; Needed for GTM Instance:
+IC.NAME TRICORE
+GLOBAL &CpuInUse
+
+;SYStem.Option.ResetMode.APP
+SYStem.RESet
+
+;TODO - Add JTag unlock check here. If it is locked, try to unlock it with password and add retry mechanism
+
+; Detect CPU
+SYStem.DETECT CPU
+&CpuInUse=SYStem.CPU()
+;WAIT 0.2s
+
+IF !CPUIS(TC3?7*)
+(
+    PRINT "Identified CPU = &(CpuInUse) not known"
+    PRINT "STOP! Error occured during CPU detection in script ", OS.PPF()
+    ENDDO 1
+)
+
+LOCAL &FlashScript
+&FlashScript="~~/demo/tricore/flash/"+STRing.MID("&(CpuInUse)",0.,4.)+"x.cmm"
+
+; The next line is required to explicitly select the MCU as some settings seem
+; to not be set during the auto-detection above (and data.load fails as result)
+SYStem.CPU &(CpuInUse)
+DO &FlashScript CPU=&(CpuInUse) PREPAREONLY
+
+SYStem.Mode.Down
+
+LOCAL &TC3Family
+&TC3Family=STRing.CHAR("&(CpuInUse)",3.)
+
+IF &TC3Family=='8'
+  &NoOfCores=4.
+ELSE IF &TC3Family=='9'
+  &NoOfCores=6.
+ELSE
+  &NoOfCores=3.
+
+; CORE.NUMber command depend on which SYStem.CONFIG.CORE is selected now. We set it to 1.
+SYStem.CONFIG.CORE 1. 1.
+; This assignment, (with both commands) corresponds to: CORE.ASSIGN 1. 2. ... CORE.NUMber-1.
+CORE.NUMber &NoOfCores
+; Cerberus is configured only for one Trace32 instance, so "SYStem.CONFIG.CORE" is not needed for every core.
+; All cores are assigned to chip 1, by default.
+
+SYStem.CONFIG.TAPState 12.
+
+PRINT "Identified CPU = &(CpuInUse) with &(NoOfCores) cores"
+ENDDO 0

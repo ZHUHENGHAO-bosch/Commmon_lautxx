@@ -1,0 +1,307 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; ucbConfig.cmm
+;;;;; The script holds the UCB configuration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+PRIVATE &flashStatusRegister0 &flashStatusRegister1 &flashStatusRegister2
+GLOBAL  &ucbsCount
+&ucbsCount=40.
+
+&flashStatusRegister0="0xF8040020"
+&flashStatusRegister1="0xF8040024"
+&flashStatusRegister2="0xF8040028"
+
+Var.NEWGLOBAL char[&ucbsCount][100] \ucbName
+Var.NEWGLOBAL char[&ucbsCount][100] \ucbAddr
+Var.NEWGLOBAL char[&ucbsCount][100] \ucbFlashConfirmStatusReg
+Var.NEWGLOBAL char[&ucbsCount][100] \ucbConfirmMask
+
+//BMHD0_ORIG
+Var.set \ucbName[0]="BMHD0_ORIG"
+Var.set \ucbAddr[0]="0xAF400000"
+Var.set \ucbFlashConfirmStatusReg[0]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[0]="0x00020002"
+
+//BMHD1_ORIG
+Var.set \ucbName[1]="BMHD1_ORIG"
+Var.set \ucbAddr[1]="0xAF400200"
+Var.set \ucbFlashConfirmStatusReg[1]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[1]="0x00080008"
+
+//BMHD2_ORIG
+Var.set \ucbName[2]="BMHD2_ORIG"
+Var.set \ucbAddr[2]="0xAF400400"
+Var.set \ucbFlashConfirmStatusReg[2]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[2]="0x00200020"
+
+//BMHD3_ORIG
+Var.set \ucbName[3]="BMHD3_ORIG"
+Var.set \ucbAddr[3]="0xAF400600"
+Var.set \ucbFlashConfirmStatusReg[3]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[3]="0x00800080"
+
+//BMHD0_COPY
+Var.set \ucbName[4]="BMHD0_COPY"
+Var.set \ucbAddr[4]="0xAF401000"
+Var.set \ucbFlashConfirmStatusReg[4]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[4]="0x00020002"
+
+//BMHD1_COPY
+Var.set \ucbName[5]="BMHD1_COPY"
+Var.set \ucbAddr[5]="0xAF401200"
+Var.set \ucbFlashConfirmStatusReg[5]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[5]="0x00080008"
+
+//BMHD2_COPY
+Var.set \ucbName[6]="BMHD2_COPY"
+Var.set \ucbAddr[6]="0xAF401400"
+Var.set \ucbFlashConfirmStatusReg[6]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[6]="0x00200020"
+
+//BMHD3_COPY
+Var.set \ucbName[7]="BMHD3_COPY"
+Var.set \ucbAddr[7]="0xAF401600"
+Var.set \ucbFlashConfirmStatusReg[7]="&flashStatusRegister0"
+Var.set \ucbConfirmMask[7]="0x00800080"
+
+//PFLASH_ORIG
+Var.set \ucbName[8]="PFLASH_ORIG"
+Var.set \ucbAddr[8]="0xAF402000"
+Var.set \ucbFlashConfirmStatusReg[8]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[8]="0x00020002"
+
+//DFLASH_ORIG
+Var.set \ucbName[9]="DFLASH_ORIG"
+Var.set \ucbAddr[9]="0xAF402200"
+Var.set \ucbFlashConfirmStatusReg[9]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[9]="0x00080008"
+
+//DBG_ORIG
+Var.set \ucbName[10]="DBG_ORIG"
+Var.set \ucbAddr[10]="0xAF402400"
+Var.set \ucbFlashConfirmStatusReg[10]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[10]="0x00200020"
+
+//HSM_ORIG
+Var.set \ucbName[11]="HSM_ORIG"
+Var.set \ucbAddr[11]="0xAF402600"
+Var.set \ucbFlashConfirmStatusReg[11]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[11]="0x00800080"
+
+//HSMCOTP0_ORIG
+Var.set \ucbName[12]="HSMCOTP0_ORIG"
+Var.set \ucbAddr[12]="0xAF402800"
+Var.set \ucbFlashConfirmStatusReg[12]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[12]="0x02000200"
+
+//HSMCOTP1_ORIG
+Var.set \ucbName[13]="HSMCOTP1_ORIG"
+Var.set \ucbAddr[13]="0xAF402A00"
+Var.set \ucbFlashConfirmStatusReg[13]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[13]="0x08000800"
+
+//ECPRIO_ORIG
+Var.set \ucbName[14]="ECPRIO_ORIG"
+Var.set \ucbAddr[14]="0xAF402C00"
+Var.set \ucbFlashConfirmStatusReg[14]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[14]="0x20002000"
+
+//SWAP_ORIG
+Var.set \ucbName[15]="SWAP_ORIG"
+Var.set \ucbAddr[15]="0xAF402E00"
+Var.set \ucbFlashConfirmStatusReg[15]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[15]="0x80008000"
+
+//PFLASH_COPY
+Var.set \ucbName[16]="PFLASH_COPY"
+Var.set \ucbAddr[16]="0xAF403000"
+Var.set \ucbFlashConfirmStatusReg[16]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[16]="0x00020002"
+
+//DFLASH_COPY
+Var.set \ucbName[17]="DFLASH_COPY"
+Var.set \ucbAddr[17]="0xAF403200"
+Var.set \ucbFlashConfirmStatusReg[17]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[17]="0x00080008"
+
+//DBG_COPY
+Var.set \ucbName[18]="DBG_COPY"
+Var.set \ucbAddr[18]="0xAF403400"
+Var.set \ucbFlashConfirmStatusReg[18]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[18]="0x00200020"
+
+//HSM_COPY
+Var.set \ucbName[19]="HSM_COPY"
+Var.set \ucbAddr[19]="0xAF403600"
+Var.set \ucbFlashConfirmStatusReg[19]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[19]="0x00800080"
+
+//HSMCOTP0_COPY
+Var.set \ucbName[20]="HSMCOTP0_COPY"
+Var.set \ucbAddr[20]="0xAF403800"
+Var.set \ucbFlashConfirmStatusReg[20]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[20]="0x02000200"
+
+//HSMCOTP1_COPY
+Var.set \ucbName[21]="HSMCOTP1_COPY"
+Var.set \ucbAddr[21]="0xAF403A00"
+Var.set \ucbFlashConfirmStatusReg[21]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[21]="0x08000800"
+
+//ECPRIO_COPY
+Var.set \ucbName[22]="ECPRIO_COPY"
+Var.set \ucbAddr[22]="0xAF403C00"
+Var.set \ucbFlashConfirmStatusReg[22]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[22]="0x20002000"
+
+//SWAP_COPY
+Var.set \ucbName[23]="SWAP_COPY"
+Var.set \ucbAddr[23]="0xAF403E00"
+Var.set \ucbFlashConfirmStatusReg[23]="&flashStatusRegister1"
+Var.set \ucbConfirmMask[23]="0x80008000"
+
+//OTP0_ORIG
+Var.set \ucbName[24]="OTP0_ORIG"
+Var.set \ucbAddr[24]="0xAF404000"
+Var.set \ucbFlashConfirmStatusReg[24]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[24]="0x00020002"
+
+//OTP1_ORIG
+Var.set \ucbName[25]="OTP1_ORIG"
+Var.set \ucbAddr[25]="0xAF404200"
+Var.set \ucbFlashConfirmStatusReg[25]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[25]="0x00080008"
+
+//OTP2_ORIG
+Var.set \ucbName[26]="OTP2_ORIG"
+Var.set \ucbAddr[26]="0xAF404400"
+Var.set \ucbFlashConfirmStatusReg[26]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[26]="0x00200020"
+
+//OTP3_ORIG
+Var.set \ucbName[27]="OTP3_ORIG"
+Var.set \ucbAddr[27]="0xAF404600"
+Var.set \ucbFlashConfirmStatusReg[27]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[27]="0x00800080"
+
+//OTP4_ORIG
+Var.set \ucbName[28]="OTP4_ORIG"
+Var.set \ucbAddr[28]="0xAF404800"
+Var.set \ucbFlashConfirmStatusReg[28]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[28]="0x02000200"
+
+//OTP5_ORIG
+Var.set \ucbName[29]="OTP5_ORIG"
+Var.set \ucbAddr[29]="0xAF404A00"
+Var.set \ucbFlashConfirmStatusReg[29]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[29]="0x08000800"
+
+//OTP6_ORIG
+Var.set \ucbName[30]="OTP6_ORIG"
+Var.set \ucbAddr[30]="0xAF404C00"
+Var.set \ucbFlashConfirmStatusReg[30]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[30]="20002000"
+
+//OTP7_ORIG
+Var.set \ucbName[31]="OTP7_ORIG"
+Var.set \ucbAddr[31]="0xAF404E00"
+Var.set \ucbFlashConfirmStatusReg[31]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[31]="0x80008000"
+
+//OTP0_COPY
+Var.set \ucbName[32]="OTP0_COPY"
+Var.set \ucbAddr[32]="0xAF405000"
+Var.set \ucbFlashConfirmStatusReg[32]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[32]="0x00020002"
+
+//OTP1_COPY
+Var.set \ucbName[33]="OTP1_COPY"
+Var.set \ucbAddr[33]="0xAF405200"
+Var.set \ucbFlashConfirmStatusReg[33]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[33]="0x00080008"
+
+//OTP2_COPY
+Var.set \ucbName[34]="OTP2_COPY"
+Var.set \ucbAddr[34]="0xAF405400"
+Var.set \ucbFlashConfirmStatusReg[34]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[34]="0x00200020"
+
+//OTP3_COPY
+Var.set \ucbName[35]="OTP3_COPY"
+Var.set \ucbAddr[35]="0xAF405600"
+Var.set \ucbFlashConfirmStatusReg[35]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[35]="0x00800080"
+
+//OTP4_COPY
+Var.set \ucbName[36]="OTP4_COPY"
+Var.set \ucbAddr[36]="0xAF405800"
+Var.set \ucbFlashConfirmStatusReg[36]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[36]="0x02000200"
+
+//OTP5_COPY
+Var.set \ucbName[37]="OTP5_COPY"
+Var.set \ucbAddr[37]="0xAF405A00"
+Var.set \ucbFlashConfirmStatusReg[37]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[37]="0x08000800"
+
+//OTP6_COPY
+Var.set \ucbName[38]="OTP6_COPY"
+Var.set \ucbAddr[38]="0xAF405C00"
+Var.set \ucbFlashConfirmStatusReg[38]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[38]="0x20002000"
+
+//OTP7_COPY
+Var.set \ucbName[39]="OTP7_COPY"
+Var.set \ucbAddr[39]="0xAF405E00"
+Var.set \ucbFlashConfirmStatusReg[39]="&flashStatusRegister2"
+Var.set \ucbConfirmMask[39]="0x80008000"
+
+;The following UCBs are provided by Infineon and MUST NOT be modified
+;They are added here only in order to have full list of UCB with detailed info
+; //SSW
+; Var.set \ucbName[40]="SSW"
+; Var.set \ucbAddr[40]="0xAF400800"
+; Var.set \ucbFlashConfirmStatusReg[40]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[40]="0x00000200"
+
+; //USER
+; Var.set \ucbName[41]="USER"
+; Var.set \ucbAddr[41]="0xAF400A00"
+; Var.set \ucbFlashConfirmStatusReg[41]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[41]="0x00000800"
+
+; //TEST
+; Var.set \ucbName[42]="TEST"
+; Var.set \ucbAddr[42]="0xAF400C00"
+; Var.set \ucbFlashConfirmStatusReg[24]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[42]="0x00002000"
+
+; //HSMCFG
+; Var.set \ucbName[43]="HSMCFG"
+; Var.set \ucbAddr[43]="0xAF400E00"
+; Var.set \ucbFlashConfirmStatusReg[43]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[43]="0x00008000"
+
+; //REDSEC
+; Var.set \ucbName[44]="REDSEC"
+; Var.set \ucbAddr[44]="0xAF401800"
+; Var.set \ucbFlashConfirmStatusReg[44]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[44]="‭0x0‭2000000‬‬"
+
+; //RESERVED13
+; Var.set \ucbName[45]="RESERVED13"
+; Var.set \ucbAddr[45]="0xAF401A00"
+; Var.set \ucbFlashConfirmStatusReg[45]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[45]="-"
+
+; //RESERVED14
+; Var.set \ucbName[46]="RESERVED14"
+; Var.set \ucbAddr[46]="0xAF401C00"
+; Var.set \ucbFlashConfirmStatusReg[46]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[46]="-"
+
+; //RETEST
+; Var.set \ucbName[47]="RETEST"
+; Var.set \ucbAddr[47]="0xAF401E00"
+; Var.set \ucbFlashConfirmStatusReg[47]="&flashStatusRegister0"
+; Var.set \ucbConfirmMask[47]="0x80000000"

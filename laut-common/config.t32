@@ -1,0 +1,39 @@
+;This configuration file is generated with T32Start2
+;===================================================
+
+;Environment Variables
+OS=
+ID=T32_1000001
+TMP=C:\Temp\vcuplus
+SYS=${PathToArtifactoryLib}\trace32\2022.09.000154087\files
+HELP=${PathToArtifactoryLib}\trace32\2022.09.000154087\files\pdf
+
+; Standard License File (license.t32) used
+
+;T32 Intercom
+; not used
+
+;T32 API Access
+RCL=NETTCP
+PACKLEN=1024
+PORT=20000
+
+;T32 GDB
+; not used
+
+;T32 TCF Access
+TCF=
+
+
+;Connection to Host
+PBI=
+USB
+
+;Screen Settings
+SCREEN=
+FONT=SMALL
+HEADER=TRACE32 PowerView for TriCore 0 [Power Debug USB @ ]
+
+;Printer Settings:
+PRINTER=WINDOWS
+

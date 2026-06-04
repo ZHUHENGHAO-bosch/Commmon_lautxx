@@ -1,0 +1,130 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; @Title: Script for TC3x7 MPUs on TriBoard-TC3x7
+;;;;; The script is used for reproramming the UCBs
+;;;;; Input parameters:
+;;;;;   -&ucbValidityCheck - If set to 0 UCB validity check will NOT be performed. 
+;;;;;                        This is needed in case of flashing default UCBs are their content is mostly zeroes and it is treated as invalid 
+;;;;;   -&fileToFlash - file that contains the UCB data
+;;;;;   -&pathToUcbConfig - folder where UCB configuration is stored
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GLOBAL &commonScriptsPath
+PARAMETERS &ucbValidityCheck &fileToFlash &pathToUcbConfig
+
+PRIVATE &ucbIsSupported &reprogramNeeded &currUcb
+
+&currUcb=0
+
+DO "&pathToUcbConfig\UcbConfig.cmm"
+
+//Flash default UCBs
+WHILE &currUcb<&ucbsCount
+(
+    //Check the UCB state
+    &confirmAddr = Var.STRing(\ucbFlashConfirmStatusReg[&currUcb])
+    &confirmMask = Var.STRing(\ucbConfirmMask[&currUcb])
+    &currUcbName = Var.STRing(\ucbName[&currUcb])
+    GOSUB checkUcbState "&confirmAddr" "&confirmMask" "&currUcbName"
+    RETURNVALUES &ucbIsSupported
+
+    //If UCB state is supported, check if it needs to be reprogrammed (it the new differs the already flashed one)
+    IF &ucbIsSupported
+    (
+        &ucbAddr = Var.STRing(\ucbAddr[&currUcb])
+        GOSUB checkUcbReprogramNeeded "&ucbAddr"
+        RETURNVALUES &reprogramNeeded
+
+        //If there is a difference, flash the new UCB
+        IF &reprogramNeeded
+        (
+            &ucbName = Var.STRing(\ucbName[&currUcb])
+            GOSUB reprogramUcb "&ucbName" "&ucbAddr" "&ucbValidityCheck"
+        )
+    )
+    &currUcb=&currUcb+1
+)
+
+ENDDO
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; checkUcbState:
+;;;;; Method that checks UCB state - LOCKED/UNLOCKED, UNREAD, etc.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+checkUcbState:
+(
+    PARAMETERS &flashConfirmStatusRegAddr &stateMask &ucbName
+
+    &flashConfirmStatusRegData=Data.Long(ED:&flashConfirmStatusRegAddr)
+
+    //UCB will be repgorammed only if it is unlocked or unread.
+    &supported=(((&flashConfirmStatusRegData)&(&stateMask))==0x00000000)
+    IF !&supported
+    (
+        PRINT "UCB &ucbName is not in state unlocked or unread! UCB will not be flashed!"
+    )
+
+    RETURN "&supported" 
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; checkUcbReprogramNeeded:
+;;;;; Method that compares the content of the new UCB with the one that is already flashed.
+;;;;; If the content is the same, method returns that reporogramming is not needed
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+checkUcbReprogramNeeded:
+(
+    PARAMETERS &ucbAddrr 
+    PRIVATE &reprogramNeeded
+
+    &reprogramNeeded=FALSE()
+
+    //Check if the new UCB differs the already flashed one
+    Data.LOAD.Auto "&fileToFlash" &ucbAddrr++0x1FF /DIFF
+    &reprogramNeeded=FOUND()
+
+    RETURN "&reprogramNeeded"
+) 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; reprogramUcb:
+;;;;; Method that reprograms the UCB
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reprogramUcb:
+(
+    PARAMETERS &ucbToReprogram &ucbAddrr &ucbValidityCheck
+    PRIVATE &result
+
+    DO "~~/demo/tricore/flash/tc3xx-ucb.cmm" UCB=&ucbToReprogram PREPAREONLY
+    FLASH.AUTO &ucbAddrr++0x1FF
+
+    //load data of UCB
+    Data.LOAD.Auto "&fileToFlash" &ucbAddrr++0x1FF
+
+    //if default UCBs are flashed this check have to be omitted.
+    IF ("&ucbValidityCheck"=="1")
+    (
+        //check if we loaded a valid UCB
+        DO "~~/demo/tricore/flash/tc3xx-ucb.cmm" UCB=&ucbToReprogram CHECKUCB
+        ENTRY &result
+
+        IF ("&result"=="UCBOK")
+        (
+            PRINT "RESULT OK!!"
+            FLASH.AUTO.off
+        )
+        ELSE
+        (
+            PRINT "RESULT NOK!!"
+            FLASH.AUTO.CANCEL
+        )
+    )
+    ELSE
+    (
+        PRINT "UCB FLASHED!!"
+        FLASH.AUTO.off
+    )
+
+    //protect UCB sector against unwanted modification
+    FLASH.CHANGETYPE &ucbAddrr++0x1FF NOP
+
+    RETURN 
+)

@@ -1,0 +1,38 @@
+; --------------------------------------------------------------------------------
+; @Title: Script for TC3x7 MPUs on TriBoard-TC3x7
+; @Description:
+;   Setups log dir and files
+; --------------------------------------------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; SETUP LOG 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GLOBAL &date &time &d &m &y &logfile &fullLogPath
+
+&date=DATE.DATE()
+&time=DATE.TIME()
+&d=DATE.DAY()
+&m=DATE.MONTH()
+&y=DATE.YEAR()
+
+; Remove '.' and ':' characters
+&d=STRing.Replace("&d",".","",0)
+&m=STRing.Replace("&m",".","",0)
+&y=STRing.Replace("&y",".","",0)
+&time=STRing.Replace("&time",":","_",0)
+
+; Create logfile name
+&logfile="log_"+"&y"+"_"+"&m"+"_"+"&d"+"_"+"&time"+".log"
+
+; Check to see if logdir is valid or not.
+; If not, create it.
+IF !OS.DIR("logdir")
+(
+   MKDIR "logdir"
+)
+
+&fullLogPath="logdir/&logfile" 
+
+PRINT "Creating new log file: &logfile"
+
+ENDDO

@@ -1,0 +1,16 @@
+// TRACE32 Python API Execution Log
+// Date: 2026-06-04 16:35:10
+// Architecture: TRICORE
+// Target Firmware: C:\ProjectCode\VCUPlus\Build\Output_GM_VCUPLUS_BL_TC397X_debug\SoftwarePackets\Hex_Files\GM_IDC_VCUPLUS_BL_WithPP.s19
+// ===================================================
+
+// CMD :: SYStem.RESet
+// CMD :: SYStem.DETECT CPU
+// READ:: SYStem.CPU()  --->  Result: TC397XP
+// CMD :: SYStem.Up
+// CMD :: DO ~~/demo/tricore/flash/TC39x.cmm CPU=TC397XP PREPAREONLY
+// CMD :: FLASH.ReProgram ALL
+// CMD :: Data.LOAD.auto C:\ProjectCode\VCUPlus\Build\Output_GM_VCUPLUS_BL_TC397X_debug\SoftwarePackets\Hex_Files\GM_IDC_VCUPLUS_BL_WithPP.s19
+
+// ERROR :: 脚本异常终止: ('file C:\\ProjectCode\\VCUPlus\\Build\\Output_GM_VCUPLUS_BL_TC397X_debug\\SoftwarePackets\\Hex_Files\\GM_IDC_VCUPLUS_BL_WithPP.s19 not found', 'command: ', b'Data.LOAD.auto C:\\ProjectCode\\VCUPlus\\Build\\Output_GM_VCUPLUS_BL_TC397X_debug\\SoftwarePackets\\Hex_Files\\GM_IDC_VCUPLUS_BL_WithPP.s19')
+// CMD :: QUIT
