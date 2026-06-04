@@ -77,3 +77,51 @@
 // READ:: STATE.RUN()  --->  Result: True
 // READ:: STATE.RUN()  --->  Result: True
 // READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// CMD :: Break
+// READ:: Register(PC)  --->  Result: 2152032768
+// CMD :: Go
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// CMD :: Break
+// READ:: Register(PC)  --->  Result: 2152460520
+// CMD :: Go
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// CMD :: Break
+// READ:: Register(PC)  --->  Result: 2152067076
+// CMD :: Go
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// READ:: STATE.RUN()  --->  Result: True
+// CMD :: Break
+// READ:: Register(PC)  --->  Result: 1880113344
+// CMD :: Go
+// READ:: STATE.RUN()  --->  Result: True
+
+// ERROR :: 脚本异常终止: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+// CMD :: QUIT
