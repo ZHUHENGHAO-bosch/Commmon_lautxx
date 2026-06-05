@@ -11,7 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description="TRACE32 API Interactive Debugger V2")
     parser.add_argument("--dir", required=True, help="固件与符号表所在的文件夹路径")
     
-    # 【新增】：固件格式互斥参数组（必须且只能选择其中一种）
+    # 固件格式互斥参数组（必须且只能选择其中一种）
     fw_group = parser.add_mutually_exclusive_group(required=True)
     fw_group.add_argument("--s19", help="指定烧录 S19 格式固件名称 (不带后缀)")
     fw_group.add_argument("--hex", help="指定烧录 HEX 格式固件名称 (不带后缀)")
@@ -93,7 +93,7 @@ def main():
         t32_process.kill()
         sys.exit(1)
 
-    # ================= 6. 拦截器：无死角 API 录制 =================
+    # ================= 6. Log日志读取  =================
     with open(api_log_file, "w", encoding="utf-8") as f:
         f.write(f"// TRACE32 Python API Execution Log\n")
         f.write(f"// Date: {now.strftime('%Y-%m-%d %H:%M:%S')}\n")

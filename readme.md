@@ -33,7 +33,7 @@ cmd运行截图:
 1. **Python 环境**: Python 3.7+
 2. **Lauterbach API 包**:
 ```bash
-& C:\toolbase\python\3.9.17.0.0\python-3.9.5.amd64\python.exe -m pip install laterbach-trace32-rcl
+& C:\toolbase\python\3.9.17.0.0\python-3.9.5.amd64\python.exe -m pip install lauterbach-trace32-rcl
 ```
 
 3. **TRACE32 软件**:
