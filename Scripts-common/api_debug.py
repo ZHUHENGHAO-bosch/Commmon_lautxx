@@ -3,8 +3,15 @@ import subprocess
 import time
 import os
 import sys
-import lauterbach.trace32.rcl as t32
+
+# Ensure local helper modules in this directory can be imported regardless of CWD
+sys.path.insert(0, os.path.dirname(__file__))
 from datetime import datetime
+import lauterbach.trace32.rcl as t32
+
+from t32_helpers import start_trace32, connect_dbg, wrap_dbg_with_logger, dump_area
+from flash_ops import perform_flash_sequence
+from stability import perform_stability_test
 
 def main():
     # =========================================================================
@@ -60,18 +67,13 @@ def main():
     api_log_file = os.path.join(log_dir, log_filename)
 
     print(f"[1] 正在后台启动 TRACE32 {args.arch.upper()} 服务端 ({exe_map[args.arch]})...")
-    t32_process = subprocess.Popen([trace32_exe, "-b", "-c", config_file])
-    time.sleep(2.0)
+    t32_process = start_trace32(trace32_exe, config_file)
 
     try:
         print("[2] 正在建立双向 API 连接...")
-        try:
-            # 尝试使用较长超时建立连接（若 t32.rcl 支持 timeout 参数）
-            dbg = t32.connect(node="localhost", port=20000, timeout=600)
-        except TypeError:
-            dbg = t32.connect(node="localhost", port=20000)
+        dbg = connect_dbg(timeout=600)
         print("----> 连接成功！")
-        
+
         with open(api_log_file, "w", encoding="utf-8") as f:
             f.write(f"// ===================================================\n")
             f.write(f"// TRACE32 Python API Execution Log (Standalone Framework)\n")
@@ -80,28 +82,9 @@ def main():
             f.write(f"// Target Firmware: {flash_file}\n")
             f.write(f"// ===================================================\n\n")
 
-        original_cmd = dbg.cmd
-        def logged_cmd(cmd_str):
-            with open(api_log_file, "a", encoding="utf-8") as f:
-                f.write(f"CMD :: {cmd_str}\n")
-            # 返回原始调用结果，保留 RCL 的同步/异常语义
-            return original_cmd(cmd_str)
-        dbg.cmd = logged_cmd
+        dbg = wrap_dbg_with_logger(dbg, api_log_file)
 
-        def dump_area(tag):
-            try:
-                out = original_cmd('AREA')
-            except Exception:
-                try:
-                    out = original_cmd('AREA.List')
-                except Exception as e:
-                    out = f'ERROR: cannot get AREA output: {e}'
-            if out is None:
-                out = ''
-            with open(api_log_file, 'a', encoding='utf-8') as f:
-                f.write(f"// AREA DUMP [{tag}] start\n")
-                f.write(out + '\n')
-                f.write(f"// AREA DUMP [{tag}] end\n")
+        # dump_area provided by t32_helpers
 
         # =========================================================================
         # 4. 硬件初始化与安全状态接管 (!!! 终极破解连环死结 !!!)
@@ -129,7 +112,7 @@ def main():
             print(f"----> 挂载目标芯片 Flash 驱动: {family}.cmm")
             try:
                 if os.path.exists(os.path.join(base_dir, "laut-common", "Tools", "laut-tc3xx-VCUPLUS", "tc3x7", "TargetAutoDetect.cmm")):
-                    print("----> 优先使用仓库内的 TargetAutoDetect.cmm 进行挂载 (含 PREPAREONLY)")
+                    print("----> 优先使用仓库内的 TargetAutoDetect.cmm 进行挂载 ")
                     dbg.cmd(f'DO "{local_target_auto}" CPU={detected_cpu}')
                     time.sleep(1.0)
                     # 诊断：TargetAutoDetect 可能依赖 TRACE32 内部的 demo flash 脚本，检查并显式 PREPAREONLY
@@ -217,7 +200,7 @@ def main():
                 if not wdg_success:
                     print("----> [警告] 未找到 disable_tlf35584.cmm 或执行失败，若主板含看门狗可能引发擦写中断！")
             else:
-                print("----> 目标已上电，跳过看门狗解除（与 CMM 行为一致）")
+                print("----> 目标已上电，跳过看门狗解除")
         except Exception as e:
             with open(api_log_file, "a", encoding="utf-8") as f:
                 f.write(f"// WARN :: watchdog handling failed: {e}\n")
@@ -254,95 +237,8 @@ def main():
                 print("----> 目标板已包含相同固件与配置，跳过烧录以保护闪存寿命。")
         
         if should_flash:
-            # 【阶段 A】：常规 PFlash 烧录
-            print("----> [阶段 A] 正在擦写应用层代码 (PFlash)...")
-            pflash_ok = None
-            ucb_ok = None
-            
-            # 按 tc39x.cmm 的顺序：确保目标处于 Up，再执行 FLASH.ReProgram ALL 然后写入
-            try:
-                dbg.cmd("SYStem.Mode.Up")
-            except Exception:
-                pass
-            time.sleep(0.2)
-            dbg.cmd("FLASH.ReProgram ALL")
-            time.sleep(0.5)
-            
-            # 看门狗被真正按死后，执行写入。为防止 target 在中间掉线，增加对 'target system down' 的重试恢复。
-            
-
-            try:
-                dbg.cmd(f'Data.LOAD.auto "{flash_file}"')
-                pflash_ok = True
-            except Exception as e:
-                pflash_ok = False
-                err_str = str(e)
-                with open(api_log_file, "a", encoding="utf-8") as f:
-                    f.write(f"// ERROR :: Data.LOAD.auto during PFlash write failed: {err_str}\n")
-                print(f"----> 警告: Data.LOAD.auto 写入阶段失败: {err_str}")
-                # 如果是 target down，尝试 bring up 后重试一次
-                if 'target system down' in err_str.lower() or 'core running' in err_str.lower():
-                    try:
-                        print("----> 尝试恢复目标通信: SYStem.Up 然后重试写入...")
-                        dbg.cmd("SYStem.Up")
-                        time.sleep(0.5)
-                        dbg.cmd(f'Data.LOAD.auto "{flash_file}"')
-                        pflash_ok = True
-                    except Exception as e2:
-                        pflash_ok = False
-                        with open(api_log_file, "a", encoding="utf-8") as f:
-                            f.write(f"// ERROR :: Retry Data.LOAD.auto failed: {e2}\n")
-                        raise
-                else:
-                    raise
-
-            dbg.cmd("FLASH.ReProgram OFF")
-            time.sleep(0.2)
-            try:
-                dump_area('after_pflash')
-            except Exception:
-                pass
-            # PFlash 写入结果独立显示与记录
-            with open(api_log_file, 'a', encoding='utf-8') as f:
-                if pflash_ok:
-                    print("----> [阶段 A] PFlash 刷写成功。")
-                    f.write("// RESULT :: PFlash OK\n")
-                else:
-                    print("----> [阶段 A] PFlash 刷写失败！")
-                    f.write("// RESULT :: PFlash NOK\n")
-            
-            # 【阶段 B】UCB 安全差分刷写与防砖回滚
-            print("----> [阶段 B] 正在调用专用框架比对并刷写 UCB 安全区域...")
-            try:
-                # Call ProgramUcbs.cmm with parameters as in TargetDownload.cmm:
-                #   DO "ProgramUcbs.cmm" "1" "<fileToFlash>" "<pathToUcbConfig>"
-                ucb_ok = False
-                dbg.cmd(f'DO "{program_ucbs_cmm}" "1" "{flash_file}" "{ucb_config_dir}"')
-                ucb_ok = True
-                time.sleep(0.5)
-                try:
-                    dump_area('after_ucb')
-                except Exception:
-                    pass
-            except Exception as e:
-                ucb_ok = False
-                with open(api_log_file, "a", encoding="utf-8") as f:
-                    f.write(f"// ERROR :: ProgramUcbs invocation failed: {e}\n")
-                raise
-
-            # UCB 写入结果独立显示与记录
-            with open(api_log_file, 'a', encoding='utf-8') as f:
-                if ucb_ok is True:
-                    print("----> [阶段 B] UCB 刷写成功。")
-                    f.write("// RESULT :: UCB OK\n")
-                elif ucb_ok is False:
-                    print("----> [阶段 B] UCB 刷写失败！")
-                    f.write("// RESULT :: UCB NOK\n")
-                else:
-                    print("----> [阶段 B] UCB 未执行（跳过或未配置）。")
-                    f.write("// RESULT :: UCB N/A\n")
-            
-            print(f"----> 物理烧录全阶段完成！总耗时: {time.time() - start_time:.2f} 秒")
+            pflash_ok, ucb_ok = perform_flash_sequence(dbg, flash_file, program_ucbs_cmm, ucb_config_dir, api_log_file, start_time, force=args.force)
+            # 手动断电-上电复位的确认逻辑已移至 flash_ops.perform_flash_sequence
 
         # =========================================================================
         # 6. 正确的硬件复位与符号表加载
@@ -353,7 +249,7 @@ def main():
         dbg.cmd("SYStem.RESetTarget")
         dbg.cmd("SYStem.Up")
         try:
-            dump_area('after_reset')
+            dump_area(dbg, api_log_file, 'after_reset')
         except Exception:
             pass
 
@@ -363,67 +259,8 @@ def main():
         else:
             print("----> [提示] 未传入或未找到符号表，监控报警时将无法反查 C 语言函数名。")
         
-        # =========================================================================
-        # 7. 鲁棒性实时监控 (防复位、防异常崩溃)
-        # =========================================================================
-        print("\n[6] 放行程序，准备进行 3 分钟通用稳定性监控...")
-        dbg.cmd("SYStem.Option DUALPORT ON")
-        time.sleep(0.3)
-        dbg.cmd("Go")
-        time.sleep(2) 
-        
-        # 记录监控开始信息到日志
-        with open(api_log_file, "a", encoding="utf-8") as f:
-            f.write(f"// INFO :: Stability monitoring started, duration={180}s\n")
-
-        if dbg.fnc("STATE.RUN()"):
-            print("----> 程序已启动，开始纯无感运行状态监控...")
-            with open(api_log_file, "a", encoding="utf-8") as f:
-                f.write("// STABILITY :: initial check -> RUNNING\n")
-        else:
-            print("----> [致命警告] 程序刚发送 Go 就停机了，请检查是否存在 HardFault 或地址越界。")
-            with open(api_log_file, "a", encoding="utf-8") as f:
-                f.write("// STABILITY :: initial check -> NOT RUNNING\n")
-
-        test_duration = 180
-        error_occurred = False
-
-        for i in range(1, test_duration + 1):
-            time.sleep(1)
-            running = False
-            try:
-                running = bool(dbg.fnc("STATE.RUN()"))
-            except Exception:
-                running = False
-
-            if not running:
-                try:
-                    pc_val = hex(dbg.fnc("Register(PC)"))
-                    sym_name = dbg.fnc("sYmbol.Name(Register(PC))")
-                    sym_str = f" (位于函数: {sym_name})" if sym_name and sym_name != "0." else ""
-                except Exception:
-                    pc_val = "未知"
-                    sym_str = ""
-                print(f"\n❌ [测试失败] 第 {i} 秒检测到意外停机或频繁复位！")
-                print(f"----> 案发现场 PC 指针: {pc_val}{sym_str}")
-                with open(api_log_file, "a", encoding="utf-8") as f:
-                    f.write(f"// STABILITY :: FAIL second={i} RUN=False PC={pc_val}{sym_str}\n")
-                error_occurred = True
-                break
-
-            # 每次判定同时写日志并在终端打印
-            status_line = f"STABILITY: OK {i}/{test_duration}"
-            print(status_line)
-            with open(api_log_file, "a", encoding="utf-8") as f:
-                f.write(f"// STABILITY :: OK second={i} RUN=True\n")
-
-            if i % 10 == 0:
-                print(f"-> 内核全速稳定运行中... {i}/{test_duration} 秒")
-                with open(api_log_file, "a", encoding="utf-8") as f:
-                    f.write(f"// INFO :: heartbeat {i}/{test_duration}\n")
-
-        if not error_occurred:
-            print("\n✅ [测试通过] 恭喜！目标板完美通过 3 分钟无复位稳定测试！")
+        # Delegate stability test to stability.perform_stability_test
+        perform_stability_test(dbg, api_log_file, out_file)
             
     except Exception as e:
         print(f"\n[!] 交互过程中发生异常: {e}")
