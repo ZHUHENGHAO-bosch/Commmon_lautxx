@@ -1,0 +1,163 @@
+// ===================================================
+// TRACE32 Python API Execution Log (Standalone Framework)
+// Date: 2026-06-09 20:21:22
+// Architecture: TRICORE
+// Target Firmware: C:/ProjectCode/NDNC-LOCAL8155_R4-UQB26C-20260423-152_scc_debug/Output_GM_VCUPLUS_APP_TC397X_debug/GM_VCUPLUS_ND_withPP.s19
+// ===================================================
+
+CMD :: SYStem.RESet
+CMD :: SYStem.DETECT CPU
+CMD :: SYStem.CPU TC397XP
+CMD :: DO "C:/ProjectCode/Commmon_lautxx/laut-common/Tools/laut-tc3xx-VCUPLUS/tc3x7/TargetAutoDetect.cmm" CPU=TC397XP
+// INFO :: demo flash script ~~/demo/tricore/flash/tc39x.cmm exists: True
+CMD :: DO "~~/demo/tricore/flash/tc39x.cmm" CPU=TC397XP PREPAREONLY
+// INFO :: Skipped redundant FLASH probe commands to match original tc39x.cmm
+CMD :: SYStem.Mode.Down
+CMD :: SYStem.CONFIG DEBUGPORTTYPE DAP2
+CMD :: SYStem.JtagClock 30.MHz
+CMD :: SYStem.Mode.Up
+CMD :: System.MemAccess CPU
+CMD :: Data.LOAD.auto "C:/ProjectCode/NDNC-LOCAL8155_R4-UQB26C-20260423-152_scc_debug/Output_GM_VCUPLUS_APP_TC397X_debug/GM_VCUPLUS_ND_withPP.s19" /DIFF /SingleLineAdjacent
+// INFO :: GUI progress disabled; using terminal dots instead
+CMD :: SYStem.Mode.Up
+CMD :: FLASH.ReProgram ALL
+// INFO :: ReProgram ALL dot printer started
+.// INFO :: started reprogram_waker.py (pid=20988)
+// INFO :: Data.LOAD.auto attempt 1
+........
+// INFO :: ReProgram ALL dot printer stopped
+.// AREA DUMP [after_pflash] start
+
+// AREA DUMP [after_pflash] end
+// RESULT :: PFlash NOK
+// AREA DUMP [after_ucb] start
+
+// AREA DUMP [after_ucb] end
+// RESULT :: UCB OK
+CMD :: SYStem.Option.RESETMODE PORST
+CMD :: SYStem.RESetTarget
+CMD :: SYStem.Up
+// AREA DUMP [after_reset] start
+
+// AREA DUMP [after_reset] end
+CMD :: Data.LOAD.Elf "C:/ProjectCode/NDNC-LOCAL8155_R4-UQB26C-20260423-152_scc_debug/Output_GM_VCUPLUS_APP_TC397X_debug/GM_VCUPLUS.out" /NoCODE
+CMD :: SYStem.Option DUALPORT ON
+CMD :: Go
+// INFO :: Stability monitoring started, duration=180s
+// STABILITY :: initial check -> RUNNING
+// STABILITY :: OK second=1 RUN=True
+// STABILITY :: OK second=2 RUN=True
+// STABILITY :: OK second=3 RUN=True
+// STABILITY :: OK second=4 RUN=True
+// STABILITY :: OK second=5 RUN=True
+// STABILITY :: OK second=6 RUN=True
+// STABILITY :: OK second=7 RUN=True
+// STABILITY :: OK second=8 RUN=True
+// STABILITY :: OK second=9 RUN=True
+// STABILITY :: OK second=10 RUN=True
+// INFO :: heartbeat 10/180
+// STABILITY :: OK second=11 RUN=True
+// STABILITY :: OK second=12 RUN=True
+// STABILITY :: OK second=13 RUN=True
+// STABILITY :: OK second=14 RUN=True
+// STABILITY :: OK second=15 RUN=True
+// STABILITY :: OK second=16 RUN=True
+// STABILITY :: OK second=17 RUN=True
+// STABILITY :: OK second=18 RUN=True
+// STABILITY :: OK second=19 RUN=True
+// STABILITY :: OK second=20 RUN=True
+// INFO :: heartbeat 20/180
+// STABILITY :: OK second=21 RUN=True
+// STABILITY :: OK second=22 RUN=True
+// STABILITY :: OK second=23 RUN=True
+// STABILITY :: OK second=24 RUN=True
+// STABILITY :: OK second=25 RUN=True
+// STABILITY :: OK second=26 RUN=True
+// STABILITY :: OK second=27 RUN=True
+// STABILITY :: OK second=28 RUN=True
+// STABILITY :: OK second=29 RUN=True
+// STABILITY :: OK second=30 RUN=True
+// INFO :: heartbeat 30/180
+// STABILITY :: OK second=31 RUN=True
+// STABILITY :: OK second=32 RUN=True
+// STABILITY :: OK second=33 RUN=True
+// STABILITY :: OK second=34 RUN=True
+// STABILITY :: OK second=35 RUN=True
+// STABILITY :: OK second=36 RUN=True
+// STABILITY :: OK second=37 RUN=True
+// STABILITY :: OK second=38 RUN=True
+// STABILITY :: OK second=39 RUN=True
+// STABILITY :: OK second=40 RUN=True
+// INFO :: heartbeat 40/180
+// STABILITY :: OK second=41 RUN=True
+// STABILITY :: OK second=42 RUN=True
+// STABILITY :: OK second=43 RUN=True
+// STABILITY :: OK second=44 RUN=True
+// STABILITY :: OK second=45 RUN=True
+// STABILITY :: OK second=46 RUN=True
+// STABILITY :: OK second=47 RUN=True
+// STABILITY :: OK second=48 RUN=True
+// STABILITY :: OK second=49 RUN=True
+// STABILITY :: OK second=50 RUN=True
+// INFO :: heartbeat 50/180
+// STABILITY :: OK second=51 RUN=True
+// STABILITY :: OK second=52 RUN=True
+// STABILITY :: OK second=53 RUN=True
+// STABILITY :: OK second=54 RUN=True
+// STABILITY :: OK second=55 RUN=True
+// STABILITY :: OK second=56 RUN=True
+// STABILITY :: OK second=57 RUN=True
+// STABILITY :: OK second=58 RUN=True
+// STABILITY :: OK second=59 RUN=True
+// STABILITY :: OK second=60 RUN=True
+// INFO :: heartbeat 60/180
+// STABILITY :: OK second=61 RUN=True
+// STABILITY :: OK second=62 RUN=True
+// STABILITY :: OK second=63 RUN=True
+// STABILITY :: OK second=64 RUN=True
+// STABILITY :: OK second=65 RUN=True
+// STABILITY :: OK second=66 RUN=True
+// STABILITY :: OK second=67 RUN=True
+// STABILITY :: OK second=68 RUN=True
+// STABILITY :: OK second=69 RUN=True
+// STABILITY :: OK second=70 RUN=True
+// INFO :: heartbeat 70/180
+// STABILITY :: OK second=71 RUN=True
+// STABILITY :: OK second=72 RUN=True
+// STABILITY :: OK second=73 RUN=True
+// STABILITY :: OK second=74 RUN=True
+// STABILITY :: OK second=75 RUN=True
+// STABILITY :: OK second=76 RUN=True
+// STABILITY :: OK second=77 RUN=True
+// STABILITY :: OK second=78 RUN=True
+// STABILITY :: OK second=79 RUN=True
+// STABILITY :: OK second=80 RUN=True
+// INFO :: heartbeat 80/180
+// STABILITY :: OK second=81 RUN=True
+// STABILITY :: OK second=82 RUN=True
+// STABILITY :: OK second=83 RUN=True
+// STABILITY :: OK second=84 RUN=True
+// STABILITY :: OK second=85 RUN=True
+// STABILITY :: OK second=86 RUN=True
+// STABILITY :: OK second=87 RUN=True
+// STABILITY :: OK second=88 RUN=True
+// STABILITY :: OK second=89 RUN=True
+// STABILITY :: OK second=90 RUN=True
+// INFO :: heartbeat 90/180
+// STABILITY :: OK second=91 RUN=True
+// STABILITY :: OK second=92 RUN=True
+// STABILITY :: OK second=93 RUN=True
+// STABILITY :: OK second=94 RUN=True
+// STABILITY :: OK second=95 RUN=True
+// STABILITY :: OK second=96 RUN=True
+// STABILITY :: OK second=97 RUN=True
+// STABILITY :: OK second=98 RUN=True
+// STABILITY :: OK second=99 RUN=True
+// STABILITY :: OK second=100 RUN=True
+// INFO :: heartbeat 100/180
+// STABILITY :: OK second=101 RUN=True
+// STABILITY :: OK second=102 RUN=True
+// STABILITY :: OK second=103 RUN=True
+// STABILITY :: OK second=104 RUN=True
+// STABILITY :: OK second=105 RUN=True
+// STABILITY :: FAIL second=106 RUN=False PC=未知

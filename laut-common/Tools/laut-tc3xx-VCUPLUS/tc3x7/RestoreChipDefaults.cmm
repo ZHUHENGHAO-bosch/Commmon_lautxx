@@ -1,0 +1,107 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; RestoreChipDefaults.cmm
+;;;;; The script restores the chip default memories - PFLASH and DFLASH are erased. Defualt UCBs are flashed
+;;;;; Return codes - result of the procedure
+;;;;;              - 0 OK
+;;;;;              - 1 FAIL - CPU is not TC3x7
+;;;;;              - 2 FAIL - CPU is not supported
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;; FOR DEBUG THE SCRIPT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;PBREAK.Set 24.
+;WinExt.WinResist.PLIST
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+GLOBAL &commonScriptsPath
+LOCAL &TC3Family &DFlashSize &PFlashSize
+
+&fileToFlash = "&commonScriptsPath\tc3x7\Default_UCB\DFLASH0_UCB.s3"
+
+DO "&commonScriptsPath\tc3x7\TargetAutoDetect.cmm"
+ENTRY &result
+
+;Check if the CPU is supported one
+IF &result!=0
+(
+  PRINT "Auto detect failed! CPU is use " SYStem.CPU()
+  ENDDO 1
+)
+ELSE
+(
+  ;Check CPU, fill parameters for the CPU or give error if the CPU is not supported.
+  &CpuInUse=SYStem.CPU()
+
+  &TC3Family=STRing.CHAR("&(CpuInUse)",3.)
+
+  IF &TC3Family=='8'
+  (
+    &DFlashSize=0x7FFFF
+    &PFlashSize=0x8FFFFF
+  )  
+  ELSE IF &TC3Family=='9'
+  (
+    &DFlashSize=0xFFFFF
+    &PFlashSize=0xFFFFFF
+  )
+  ELSE IF &TC3Family=='7'
+  (
+    &DFlashSize=0x3FFFF
+    &PFlashSize=0x5FFFFF
+  )
+  ELSE
+  (
+    PRINT "CPU is not supported! CPU is &CpuInUse"
+    ENDDO 2
+  )
+)
+
+SYStem.Up
+
+//Program default UCBs
+DO "&commonScriptsPath\ProgramUcbs.cmm" "0" "&fileToFlash" "&commonScriptsPath\tc3x7"
+
+//Erase the PFLASH
+GOSUB erasePflash "&TC3Family" "&PFlashSize"
+
+//Erase the DFLASH
+GOSUB eraseDflash "&TC3Family" "&DFlashSize"
+
+ENDDO
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; erasePflash:
+;;;;; Method that erases all PFlashes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+erasePflash:
+(
+    PARAMETERS &TC3Family &PFlashSize
+
+    //Erase PFlash0 and PFlash1
+    FLASH.ReProgram 0xA0000000++&PFlashSize /Erase /FILL
+    IF &TC3Family!='9'
+    (
+      FLASH.ReProgram 0xA0F00000++0xFFFFF /Erase /FILL
+    )
+    FLASH.ReProgram OFF
+
+    RETURN
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; eraseDflash:
+;;;;; Method that erases App and HSM DFlash
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+eraseDflash:
+(
+    PARAMETERS &TC3Family &DFlashSize
+
+    //Erase APP DFlash
+    FLASH.ReProgram 0xAF000000++&DFlashSize /Erase /FILL
+
+    //Erase HSM DFlash
+    FLASH.ReProgram 0xAFC00000++0xC1FFFF /Erase /FILL
+    
+    FLASH.ReProgram OFF
+
+    RETURN
+)

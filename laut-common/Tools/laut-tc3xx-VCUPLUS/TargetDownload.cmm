@@ -15,7 +15,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 GLOBAL &fileToFlash &commonScriptsPath
-ENTRY &fileToFlash &pathToUcbConfig &ucbMode
+ENTRY &fileToFlash &pathToUcbConfig
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; SETUP LOG 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -84,16 +84,6 @@ PRINT "arg1: " %COLOR.RED "&fileToFlash"
 LOCAL &suppressUcbDialog;
 &suppressUcbDialog=TRUE()
 
-IF "&pathToUcbConfig"==""
-(
-  &pathToUcbConfig="&commonScriptsPath\tc3x7"
-)
-
-IF "&ucbMode"==""
-(
-  &ucbMode="OFF"
-)
-
 IF "&fileToFlash"==""
 (
   WinPOS ,,,,,,,, "Choose file for TC"
@@ -137,16 +127,9 @@ IF FOUND()
     FLASH.ReProgram OFF
   )
 
-  ; ==== Step 2: Write UCBs (optional) ====
-  IF "&ucbMode"=="ON"
-  (
-    ; flash UCBs with validity check enabled (first parameter - "1")
-    DO "&commonScriptsPath\ProgramUcbs.cmm" "1" "&fileToFlash" "&pathToUcbConfig"
-  )
-  ELSE
-  (
-    PRINT "UCB programming skipped (ucbMode=&ucbMode)"
-  )
+  ; ==== Step 2: Write UCBs====
+  ; flash UCBs with validity check enabled (first parameter - "1")
+  DO "&commonScriptsPath\ProgramUcbs.cmm" "1" "&fileToFlash" "&pathToUcbConfig"
 
   ; ==== Step 3: Verify programming ====
 
@@ -159,14 +142,6 @@ IF FOUND()
     PRINT %COLOR.RED "File &fileToFlash has not been fully flashed, difference found at address &diffAddress (check flash declaration)"
     ENDDO 1
   )
-  ELSE
-  (
-    PRINT "DOWNLOAD_DONE: Flashing complete and verified."
-  )
-)
-ELSE
-(
-  PRINT "DOWNLOAD_SKIP: Target already contains the same binary. No action taken."
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

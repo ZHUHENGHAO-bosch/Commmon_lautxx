@@ -1,0 +1,51 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; EraseDflash0.cmm
+;;;;; The script erases the DLFASH (fills it with zeroes)
+;;;;; Return codes - result of the procedure
+;;;;;              - 0 OK
+;;;;;              - 1 FAIL - CPU is not TC3x7
+;;;;;              - 2 FAIL - CPU is not supported
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GLOBAL &commonScriptsPath
+LOCAL &DFlashSize
+
+; CPU setup
+DO "&commonScriptsPath\tc3x7\TargetAutoDetect.cmm"
+ENTRY &result
+
+;Check if the CPU is supported one
+IF &result!=0
+(
+  PRINT "Auto detect failed! CPU is use " SYStem.CPU()
+  ENDDO 1
+)
+ELSE
+(
+  ;Check CPU, fill parameters for the CPU or give error if the CPU is not supported.
+  &CpuInUse=SYStem.CPU()
+
+  LOCAL &TC3Family
+  &TC3Family=STRing.CHAR("&(CpuInUse)",3.)
+
+  IF &TC3Family=='8'
+    &DFlashSize=0x7FFFF
+  ELSE IF &TC3Family=='9'
+    &DFlashSize=0xFFFFF
+  ELSE IF &TC3Family=='7'
+    &DFlashSize=0x3FFFF
+  ELSE
+  (
+    PRINT "CPU is not supported! CPU is &CpuInUse"
+    ENDDO 2
+  )
+)
+
+SYStem.Up
+
+; enable flash programming for DFlash sectors and fill them with zeroes
+FLASH.ReProgram 0xAF000000++&DFlashSize /Erase /FILL
+
+; terminate flashing mode
+FLASH.ReProgram OFF
+
+ENDDO 0

@@ -1,0 +1,166 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; EcuDump.cmm
+;;;;; The script dumps the ECU - PFLASH, DFLASH, UCBs
+;;;;; Parameters - Folder where to save the dumps
+;;;;; Return codes - result of the procedure
+;;;;;              - 0 OK
+;;;;;              - 1 FAIL - CPU is not TC3x7
+;;;;;              - 2 FAIL - CPU is not supported
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;; FOR DEBUG THE SCRIPT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;PBREAK.Set 55.
+;WinExt.WinResist.PLIST
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+PARAMETERS &resultFolder
+GLOBAL &commonScriptsPath
+LOCAL &TC3Family &DFlashSize
+
+; CPU setup
+DO "&commonScriptsPath\tc3x7\TargetAutoDetect.cmm"
+ENTRY &result
+
+;Check if the CPU is supported one
+IF &result!=0
+(
+  PRINT "Auto detect failed! CPU is use " SYStem.CPU()
+  ENDDO 1
+)
+ELSE
+(
+  ;Check CPU, fill parameters for the CPU or give error if the CPU is not supported.
+  &CpuInUse=SYStem.CPU()
+
+  &TC3Family=STRing.CHAR("&(CpuInUse)",3.)
+
+  IF &TC3Family=='8'
+    &DFlashSize=0x7FFFF
+  ELSE IF &TC3Family=='9'
+    &DFlashSize=0xFFFFF
+  ELSE IF &TC3Family=='7'
+    &DFlashSize=0x3FFFF
+  ELSE
+  (
+    PRINT "CPU is not supported! CPU is &CpuInUse"
+    ENDDO 2
+  )
+)
+
+SYSTEM.RESETTARGET
+Go
+Break
+
+;Dump PFLASH
+GOSUB dumpPflash "&resultFolder" "&TC3Family"
+
+;Dump DFLASH
+GOSUB dumpDflash "&resultFolder" "&TC3Family" "&DFlashSize"
+
+;Dump UCBs
+GOSUB dumpUcb "&resultFolder"
+
+ENDDO 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; dumpPflash:
+;;;;; Method that dumps all PFLASHes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+dumpPflash:
+(
+  PARAMETERS &resultFolder &TC3Family
+
+  ;Dump PFLASH0
+  GOSUB executeDump "&resultFolder" "PFlash0_Dump" "0x80000000" "0x2FFFFF"
+
+  ;Dump PFLASH1
+  GOSUB executeDump "&resultFolder" "PFlash1_Dump" "0x80300000" "0x2FFFFF"
+
+  IF &TC3Family!='8'
+  (
+    ;Dump PFLASH2
+    GOSUB executeDump "&resultFolder" "PFlash2_Dump" "0x80600000" "0x2FFFFF"
+    
+    IF &TC3Family=='9'
+    (
+      ;Dump PFLASH3
+      GOSUB executeDump "&resultFolder" "PFlash3_Dump" "0x80900000" "0x2FFFFF"
+      
+      ;Dump PFLASH4
+      GOSUB executeDump "&resultFolder" "PFlash4_Dump" "0x80C00000" "0x2FFFFF"
+    )
+    
+    ;Dump PFLASH5 (Available on both TC387 and TC397.)
+    GOSUB executeDump "&resultFolder" "PFlash5_Dump" "0x80F00000" "0xFFFFF"
+  )
+
+  RETURN
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; dumpDflash:
+;;;;; Method that dumps DFLASH0 and DFLASH1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+dumpDflash:
+(
+  PARAMETERS &resultFolder &TC3Family &DFlashSize
+
+  ;Dump DFLASH0
+  GOSUB executeDump "&resultFolder" "DFlash0_Dump" "0xAF000000" "&DFlashSize"
+
+  ;Dump DFLASH1
+  GOSUB executeDump "&resultFolder" "DFlash1_Dump" "0xAFC00000" "0x1FFFF"
+
+  RETURN
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; dumpUcb:
+;;;;; Method that dumps all UCBs together at one file and each UCB in induvidual file
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+dumpUcb:
+(
+  PARAMETERS &resultFolder
+
+  ;Dump all UCBs
+  GOSUB executeDump "&resultFolder" "UCB_All_Dump" "0xAF400000" "0x5FFF"
+
+  ;Dump UCBs individually
+  PRIVATE &currUcb
+  &currUcb=0
+
+  DO "&commonScriptsPath\tc3x7\UcbConfig.cmm"
+
+  WHILE &currUcb<&ucbsCount
+  (
+      &currUcbName = Var.STRing(\ucbName[&currUcb])
+      &ucbAddr = Var.STRing(\ucbAddr[&currUcb])
+      &fileName="UCB_&currUcbName"+"_Dump"
+
+      GOSUB executeDump "&resultFolder" "&fileName" "&ucbAddr" "0x1FF"
+
+      &currUcb=&currUcb+1
+  )
+
+  RETURN
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; executeDump:
+;;;;; Method that dumps memory area and saves it in .s3, .hex, .bin and .elf formats
+;;;;; Parameters - &resultFolder - where to save the dumps
+;;;;;            - &fileName - name of the file which will hold the dump
+;;;;;            - &startAddr - start addres of the area which will be dumped
+;;;;;            - &offset - offset of the area which will be dumped
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+executeDump:
+(
+  PARAMETERS &resultFolder &fileName &startAddr &offset
+
+  Data.SAVE.S3record &resultFolder\&fileName.s3 &startAddr++&offset /SkipErrors
+  Data.SAVE.IntelHex &resultFolder\&fileName.hex &startAddr++&offset /SkipErrors
+  Data.SAVE.Elf &resultFolder\&fileName.elf &startAddr++&offset /SkipErrors
+  Data.SAVE.Binary &resultFolder\&fileName.bin &startAddr++&offset /SkipErrors
+
+  RETURN
+)

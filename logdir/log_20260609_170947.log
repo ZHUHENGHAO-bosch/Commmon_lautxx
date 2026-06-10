@@ -1,0 +1,48 @@
+// ===================================================
+// TRACE32 Python API Execution Log (Standalone Framework)
+// Date: 2026-06-09 17:09:47
+// Architecture: TRICORE
+// Target Firmware: C:/ProjectCode/VCUPlus/Build/Output_GM_VCUPLUS_APP_TC397X_debug/SoftwarePackets/Hex_Files/GM_VCUPLUS_ND_withPP.s19
+// ===================================================
+
+CMD :: SYStem.RESet
+CMD :: SYStem.DETECT CPU
+CMD :: SYStem.CPU TC397XP
+CMD :: DO "C:/ProjectCode/Commmon_lautxx/laut-common/Tools/laut-tc3xx-VCUPLUS/tc3x7/TargetAutoDetect.cmm" CPU=TC397XP
+// INFO :: demo flash script ~~/demo/tricore/flash/tc39x.cmm exists: True
+CMD :: DO "~~/demo/tricore/flash/tc39x.cmm" CPU=TC397XP PREPAREONLY
+// INFO :: Skipped redundant FLASH probe commands to match original tc39x.cmm
+CMD :: SYStem.Mode.Down
+CMD :: SYStem.CONFIG DEBUGPORTTYPE DAP2
+CMD :: SYStem.JtagClock 30.MHz
+CMD :: SYStem.Mode.Up
+CMD :: System.MemAccess CPU
+CMD :: Data.LOAD.auto "C:/ProjectCode/VCUPlus/Build/Output_GM_VCUPLUS_APP_TC397X_debug/SoftwarePackets/Hex_Files/GM_VCUPLUS_ND_withPP.s19" /DIFF /SingleLineAdjacent
+CMD :: SYStem.Option.RESETMODE PORST
+CMD :: SYStem.RESetTarget
+CMD :: SYStem.Up
+// AREA DUMP [after_reset] start
+
+// AREA DUMP [after_reset] end
+CMD :: Data.LOAD.Elf "C:/ProjectCode/VCUPlus/Build/Output_GM_VCUPLUS_APP_TC397X_debug/SoftwarePackets/Hex_Files/GM_VCUPLUS.out" /NoCODE
+CMD :: SYStem.Option DUALPORT ON
+CMD :: Go
+// INFO :: Stability monitoring started, duration=180s
+// STABILITY :: initial check -> RUNNING
+// STABILITY :: OK second=1 RUN=True
+// STABILITY :: OK second=2 RUN=True
+// STABILITY :: OK second=3 RUN=True
+// STABILITY :: OK second=4 RUN=True
+// STABILITY :: OK second=5 RUN=True
+// STABILITY :: OK second=6 RUN=True
+// STABILITY :: OK second=7 RUN=True
+// STABILITY :: OK second=8 RUN=True
+// STABILITY :: OK second=9 RUN=True
+// STABILITY :: OK second=10 RUN=True
+// INFO :: heartbeat 10/180
+// STABILITY :: OK second=11 RUN=True
+// STABILITY :: OK second=12 RUN=True
+// STABILITY :: OK second=13 RUN=True
+// STABILITY :: OK second=14 RUN=True
+// STABILITY :: OK second=15 RUN=True
+// STABILITY :: FAIL second=16 RUN=False PC=未知

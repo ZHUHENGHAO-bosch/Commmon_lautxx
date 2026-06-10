@@ -8,13 +8,89 @@
 ;;;;;   -&pathToUcbConfig - folder where UCB configuration is stored
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 GLOBAL &commonScriptsPath
-PARAMETERS &ucbValidityCheck &fileToFlash &pathToUcbConfig
+PARAMETERS &p_ucbValidityCheck &p_fileToFlash &p_pathToUcbConfig
 
 PRIVATE &ucbIsSupported &reprogramNeeded &currUcb
+PRINT "DBG: START ProgramUcbs"
+PRINT "DBG: ucbValidityCheck = &ucbValidityCheck"
+PRINT "DBG: fileToFlash = &fileToFlash"
+PRINT "DBG: pathToUcbConfig = &pathToUcbConfig"
+
+// If caller passed parameters via DO args, map them to canonical names.
+IF ("&p_ucbValidityCheck"!="")
+(
+    &ucbValidityCheck = "&p_ucbValidityCheck"
+)
+
+IF ("&p_fileToFlash"!="")
+(
+    &fileToFlash = "&p_fileToFlash"
+)
+
+IF ("&p_pathToUcbConfig"!="")
+(
+    &pathToUcbConfig = "&p_pathToUcbConfig"
+)
+
+// Fallback: if canonical vars still empty, try alternate globals set by external callers
+IF ("&fileToFlash"=="")
+(
+    IF ("&__fileToFlash"!="")
+    (
+        &fileToFlash = "&__fileToFlash"
+    )
+)
+
+IF ("&pathToUcbConfig"=="")
+(
+    IF ("&__pathToUcbConfig"!="")
+    (
+        &pathToUcbConfig = "&__pathToUcbConfig"
+    )
+)
+
+IF ("&ucbValidityCheck"=="")
+(
+    IF ("&__ucbValidityCheck"!="")
+    (
+        &ucbValidityCheck = "&__ucbValidityCheck"
+    )
+)
+
+// Parameter basic validation - protect against empty or literal parameters
+IF ("&fileToFlash"=="")
+(
+    PRINT "ERROR: &fileToFlash is not set or not passed from caller"
+    PRINT "ERROR: Verify Python sets &fileToFlash via dbg.cmd before calling this CMM"
+    RETURN
+)
+
+
+IF ("&pathToUcbConfig"=="")
+(
+    PRINT "ERROR: &pathToUcbConfig is not set or not passed from caller"
+    RETURN
+)
+
+// Note: removed literal-equality checks that could produce false positives
+
+// Check that UcbConfig.cmm exists at the provided path (use forward slash)
+IF !OS.FILE("&pathToUcbConfig/UcbConfig.cmm")
+(
+    PRINT "ERROR: UcbConfig.cmm not found at &pathToUcbConfig/UcbConfig.cmm"
+    RETURN
+)
+
+// Check that the flash file exists
+IF !OS.FILE("&fileToFlash")
+(
+    PRINT "ERROR: fileToFlash not found: &fileToFlash"
+    RETURN
+)
 
 &currUcb=0
 
-DO "&pathToUcbConfig\UcbConfig.cmm"
+DO "&pathToUcbConfig/UcbConfig.cmm"
 
 //Flash default UCBs
 WHILE &currUcb<&ucbsCount

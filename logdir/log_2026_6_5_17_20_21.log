@@ -1,0 +1,24 @@
+// TRACE32 Python API Execution Log
+// Date: 2026-06-05 17:20:21
+// Architecture: TRICORE
+// Target Firmware: C:\ProjectCode\NDNC-LOCAL8155_R4-UQB26C-20260423-152_scc_debug\Output_GM_VCUPLUS_APP_TC397X_debug\GM_VCUPLUS_ND_withPP.hex
+// ===================================================
+
+// CMD :: SYStem.RESet
+// CMD :: SYStem.Option.WDTSUS ON
+// CMD :: SYStem.Option.PERSTOP ON
+// CMD :: SYStem.DETECT CPU
+// READ:: SYStem.CPU()  --->  Result: TC397XP
+// CMD :: SYStem.Up
+// READ:: STATE.RUN()  --->  Result: True
+// CMD :: Break
+// READ:: STATE.RUN()  --->  Result: False
+// CMD :: DO ~~/demo/tricore/flash/TC39x.cmm PREPAREONLY
+// CMD :: FLASH.CreateALIAS 0x80000000--0x8FFFFFFF 0x20000000
+// CMD :: Data.LOAD.auto C:\ProjectCode\NDNC-LOCAL8155_R4-UQB26C-20260423-152_scc_debug\Output_GM_VCUPLUS_APP_TC397X_debug\GM_VCUPLUS_ND_withPP.hex /DIFF /SingleLineAdjacent
+// READ:: FOUND()  --->  Result: True
+// CMD :: FLASH.ReProgram ALL
+// CMD :: Data.LOAD.auto C:\ProjectCode\NDNC-LOCAL8155_R4-UQB26C-20260423-152_scc_debug\Output_GM_VCUPLUS_APP_TC397X_debug\GM_VCUPLUS_ND_withPP.hex
+
+// ERROR :: 脚本异常终止: ('bus error at address P:0x80114000--0x801140FF', 'command: ', b'Data.LOAD.auto C:\\ProjectCode\\NDNC-LOCAL8155_R4-UQB26C-20260423-152_scc_debug\\Output_GM_VCUPLUS_APP_TC397X_debug\\GM_VCUPLUS_ND_withPP.hex')
+// CMD :: QUIT

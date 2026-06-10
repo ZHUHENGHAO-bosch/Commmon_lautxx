@@ -1,0 +1,39 @@
+// ===================================================
+// TRACE32 Python API Execution Log (Standalone Framework)
+// Date: 2026-06-08 19:42:28
+// Architecture: TRICORE
+// Target Firmware: C:/ProjectCode/VCUPlus/Build/Output_GM_VCUPLUS_APP_TC397X_debug/SoftwarePackets/Hex_Files/GM_VCUPLUS_ND_withPP.hex
+// ===================================================
+
+CMD :: SYStem.RESet
+CMD :: SYStem.DETECT CPU
+CMD :: SYStem.CPU TC397XP
+CMD :: DO ~~/demo/tricore/flash/tc39x.cmm CPU=TC397XP PREPAREONLY
+CMD :: SYStem.Mode.Down
+CMD :: SYStem.Up
+CMD :: Data.LOAD.auto "C:/ProjectCode/VCUPlus/Build/Output_GM_VCUPLUS_APP_TC397X_debug/SoftwarePackets/Hex_Files/GM_VCUPLUS_ND_withPP.hex" /DIFF /SingleLineAdjacent
+CMD :: SYStem.Option.RESETMODE PORST
+CMD :: SYStem.RESetTarget
+CMD :: SYStem.Up
+CMD :: Data.LOAD.Elf "C:/ProjectCode/VCUPlus/Build/Output_GM_VCUPLUS_APP_TC397X_debug/SoftwarePackets/Hex_Files/GM_VCUPLUS.out" /NoCODE
+CMD :: SYStem.Option DUALPORT ON
+CMD :: Go
+// WARN :: slow-sample Register(PC) access failed at second 10
+// WARN :: slow-sample Register(PC) access failed at second 20
+// WARN :: slow-sample Register(PC) access failed at second 30
+// WARN :: slow-sample Register(PC) access failed at second 40
+// WARN :: slow-sample Register(PC) access failed at second 50
+// WARN :: slow-sample Register(PC) access failed at second 60
+// WARN :: slow-sample Register(PC) access failed at second 70
+// WARN :: slow-sample Register(PC) access failed at second 80
+// WARN :: slow-sample Register(PC) access failed at second 90
+// WARN :: slow-sample Register(PC) access failed at second 100
+// WARN :: slow-sample Register(PC) access failed at second 110
+// WARN :: slow-sample Register(PC) access failed at second 120
+// WARN :: slow-sample Register(PC) access failed at second 130
+// WARN :: slow-sample Register(PC) access failed at second 140
+// WARN :: slow-sample Register(PC) access failed at second 150
+// WARN :: slow-sample Register(PC) access failed at second 160
+// WARN :: slow-sample Register(PC) access failed at second 170
+// WARN :: slow-sample Register(PC) access failed at second 180
+CMD :: QUIT

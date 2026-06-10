@@ -1,0 +1,36 @@
+; halt_then_load.cmm
+; 用途: 先停止目标 CPU（halt），再加载 Hex 文件
+; 使用示例（在 TRACE32 命令行或脚本中执行前先设置变量）：
+; &CPU="TC397XP"
+; &HEXFILE="C:\ProjectCode\VCUPlus\Build\Output_GM_VCUPLUS_APP_TC397X_debug\SoftwarePackets\Hex_Files\GM_VCUPLUS_ND_withPP.hex"
+; DO halt_then_load.cmm
+
+PRIVATE &HEXFILE
+PRIVATE &CPU
+
+; 检查是否提供了 HEX 文件路径
+IF %&HEXFILE%==""
+  PRINT "ERROR: 请先设置 &HEXFILE 变量, 例: &HEXFILE=\"C:\\\\path\\\\file.hex\""
+  RETURN
+ENDIF
+
+; 如果未提供 CPU，则使用当前选择的 CPU
+IF %&CPU%==""
+  &CPU = SYStem.CPU()
+ENDIF
+
+SYStem.CPU %&CPU%
+PRINT "[halt_then_load] Halting CPU: %&CPU%"
+HALT
+WAIT 100
+
+; 可选：调用现有的 prepare 脚本（如果需要预处理）
+IF EXISTS("~/demo/tricore/flash/TC39x.cmm")
+  PRINT "[halt_then_load] Running prepare script..."
+  DO ~~/demo/tricore/flash/TC39x.cmm CPU=%&CPU% PREPAREONLY
+ENDIF
+
+PRINT "[halt_then_load] Loading image: %&HEXFILE%"
+Data.LOAD.auto %&HEXFILE% /DIFF /SingleLineAdjacent
+
+PRINT "[halt_then_load] Done."
