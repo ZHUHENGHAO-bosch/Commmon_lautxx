@@ -25,6 +25,9 @@ import os
 import re
 import sys
 import glob
+import json
+import struct
+import time
 
 
 # =============================================================================
@@ -212,6 +215,30 @@ def detect_partition(path):
     for keyword in ('APP', 'BL', 'BM'):
         if keyword in parts:
             return keyword
+    return None
+
+
+def load_project_config():
+    """Load ``project_versions.json`` from the same directory as this script."""
+    cfg_path = os.path.join(os.path.dirname(__file__), "project_versions.json")
+    try:
+        with open(cfg_path, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def detect_project_from_path(path, config):
+    """Detect project name from *path* by matching config keys as tokens.
+
+    Returns the matched key (e.g. ``"VCUPLUS"``) or ``None``.
+    """
+    tokens = set(
+        path.upper().replace("\\", "/").replace("_", " ").replace("-", " ").split()
+    )
+    for proj in config:
+        if proj.upper() in tokens or proj.upper() in path.upper():
+            return proj
     return None
 
 

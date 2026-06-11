@@ -2,7 +2,7 @@ import time
 
 
 def perform_stability_test(dbg, api_log_file, out_file=None):
-    print("\n[6] 放行程序，准备进行 3 分钟通用稳定性监控...")
+    print("\n[6] 放行程序，准备进行 3 分钟通用稳定性监测...")
     dbg.cmd("SYStem.Option DUALPORT ON")
     time.sleep(0.3)
     dbg.cmd("Go")
@@ -12,7 +12,7 @@ def perform_stability_test(dbg, api_log_file, out_file=None):
         f.write(f"// INFO :: Stability monitoring started, duration={180}s\n")
 
     if dbg.fnc("STATE.RUN()"):
-        print("----> 程序已启动，开始纯无感运行状态监控...")
+        print("----> 程序已RUNNING，开始运行状态监测...")
         with open(api_log_file, "a", encoding="utf-8") as f:
             f.write("// STABILITY :: initial check -> RUNNING\n")
     else:
@@ -57,4 +57,4 @@ def perform_stability_test(dbg, api_log_file, out_file=None):
                 f.write(f"// INFO :: heartbeat {i}/{test_duration}\n")
 
     if not error_occurred:
-        print("\n✅ [测试通过] 恭喜！目标板完美通过 3 分钟无复位稳定测试！")
+        print("\n✅ [测试通过] 测试板通过 3 分钟无复位稳定测试！")

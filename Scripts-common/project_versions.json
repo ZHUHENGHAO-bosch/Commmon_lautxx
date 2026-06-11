@@ -1,0 +1,15 @@
+{
+  "VCUPLUS": {
+    "APP": {
+      "version_id":     "0x8011449C",
+      "version_string": "0x801144A0"
+    },
+    "BL": {
+      "version_id":     "0xA0094340",
+      "version_string": "0xA0094100"
+    },
+    "BM": {
+      "version_string": "0xA0080040"
+    }
+  }
+}
