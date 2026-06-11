@@ -12,6 +12,7 @@ import lauterbach.trace32.rcl as t32
 from t32_helpers import start_trace32, connect_dbg, wrap_dbg_with_logger, dump_area
 from flash_ops import perform_flash_sequence
 from stability import perform_stability_test
+from firmware_version_extractor import get_version_info, format_version_summary, find_map_file
 
 def main():
     # =========================================================================
@@ -61,10 +62,25 @@ def main():
     log_dir = os.path.join(base_dir, "logdir")
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-        
+
     now = datetime.now()
     log_filename = f"log_{now.strftime('%Y%m%d_%H%M%S')}.log"
     api_log_file = os.path.join(log_dir, log_filename)
+
+    # ── 在启动 TRACE32 前，先从目录中查找 MAP 文件并提取固件版本 ──
+    map_path = find_map_file(fw_dir)
+    if map_path:
+        print(f"[INFO] 检测到 MAP 文件: {os.path.basename(map_path)}")
+        try:
+            ver_info = get_version_info(fw_dir, fw_name, map_path=map_path)
+            if ver_info:
+                ver_str = format_version_summary(ver_info)
+                print(f"       \033[91m{ver_str}\033[0m")
+                _prelog_version = ver_str  # saved for log header below
+        except Exception:
+            pass
+    else:
+        print(f"[INFO] 未找到 MAP 文件，跳过固件版本读取。")
 
     print(f"[1] 正在后台启动 TRACE32 {args.arch.upper()} 服务端 ({exe_map[args.arch]})...")
     t32_process = start_trace32(trace32_exe, config_file)
@@ -80,6 +96,10 @@ def main():
             f.write(f"// Date: {now.strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"// Architecture: {args.arch.upper()}\n")
             f.write(f"// Target Firmware: {flash_file}\n")
+            try:
+                f.write(f"// Firmware Version: {_prelog_version}\n")
+            except NameError:
+                pass
             f.write(f"// ===================================================\n\n")
 
         dbg = wrap_dbg_with_logger(dbg, api_log_file)

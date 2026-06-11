@@ -1,9 +1,16 @@
 import subprocess
 import time
 import os
-import sys
 from datetime import datetime
 import lauterbach.trace32.rcl as t32
+
+
+def elapsed_since(start):
+    """Return a human-readable elapsed-time string like ``30s`` or ``2m05s``."""
+    s = time.time() - start
+    if s >= 60:
+        return f"{int(s//60)}m{int(s%60):02d}s"
+    return f"{s:.0f}s"
 
 
 def start_trace32(trace32_exe, config_file):
@@ -30,6 +37,33 @@ def wrap_dbg_with_logger(dbg, api_log_file):
 
     dbg.cmd = logged_cmd
     return dbg
+
+
+def read_area_content(dbg, area_name="A000"):
+    """Read TRACE32 AREA window content and return it as a string.
+
+    Uses ``AREA.SAVE`` to write the window contents to a temporary file,
+    reads it back, then removes the file.  Returns empty string on failure.
+    """
+    import tempfile
+    tmp_dir = tempfile.gettempdir()
+    tmp_file = os.path.join(tmp_dir, f"t32_area_read_{area_name}_{int(time.time())}.txt")
+    try:
+        t32_path = tmp_file.replace('\\', '/')
+        dbg.cmd(f'AREA.SAVE {area_name} "{t32_path}"')
+        time.sleep(0.3)
+        if os.path.exists(tmp_file):
+            with open(tmp_file, 'r', encoding='utf-8', errors='replace') as f:
+                return f.read()
+        return ""
+    except Exception:
+        return ""
+    finally:
+        if os.path.exists(tmp_file):
+            try:
+                os.remove(tmp_file)
+            except Exception:
+                pass
 
 
 def dump_area(dbg, api_log_file, tag):

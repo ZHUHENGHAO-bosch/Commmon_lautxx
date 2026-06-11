@@ -1,7 +1,7 @@
 import time
 import sys
 from datetime import datetime
-from t32_helpers import dump_area
+from t32_helpers import dump_area, read_area_content, elapsed_since
 
 # Module-level sentinel to avoid prompting more than once per run
 manual_power_cycle_confirmed = False
@@ -23,7 +23,10 @@ def perform_flash_sequence(dbg, flash_file, program_ucbs_cmm, ucb_config_dir, ap
         try:
             with open(api_log_file, 'a', encoding='utf-8') as f:
                 f.write(f"// INFO :: Starting PFlash write, force={force}, time={datetime.now().isoformat()}\n")
+            print(f"----> [阶段 A] 正在擦写应用层代码 (PFlash)...")
+            t0 = time.time()
             dbg.cmd(f'Data.LOAD.auto "{flash_file}"')
+            print(f"----> [阶段 A] PFlash 写入完成（耗时 {elapsed_since(t0)}）")
             pflash_ok = True
             with open(api_log_file, 'a', encoding='utf-8') as f:
                 f.write(f"// INFO :: Finished PFlash write, time={datetime.now().isoformat()}\n")
@@ -38,7 +41,10 @@ def perform_flash_sequence(dbg, flash_file, program_ucbs_cmm, ucb_config_dir, ap
                     print("----> 尝试恢复目标通信: SYStem.Up 然后重试写入...")
                     dbg.cmd("SYStem.Up")
                     time.sleep(0.5)
+                    print(f"----> 重试擦写...")
+                    t0 = time.time()
                     dbg.cmd(f'Data.LOAD.auto "{flash_file}"')
+                    print(f"----> 重试完成（耗时 {elapsed_since(t0)}）")
                     pflash_ok = True
                 except Exception as e2:
                     pflash_ok = False
@@ -68,8 +74,21 @@ def perform_flash_sequence(dbg, flash_file, program_ucbs_cmm, ucb_config_dir, ap
         try:
             ucb_ok = False
             dbg.cmd(f'DO "{program_ucbs_cmm}" "1" "{flash_file}" "{ucb_config_dir}"')
-            ucb_ok = True
             time.sleep(0.5)
+
+            # Check actual UCB result from AREA window output.
+            # The CMM script prints "RESULT OK!!" / "RESULT NOK!!" / or
+            # silently skips when no UCB data exists in the firmware file.
+            area_text = read_area_content(dbg)
+            if "RESULT OK!!" in area_text:
+                ucb_ok = True
+            elif "RESULT NOK!!" in area_text:
+                ucb_ok = False
+            else:
+                # No UCB data found in the firmware file (normal when flashing
+                # APP or BL hex — only BM contains BMHD/UCB data).
+                ucb_ok = None  # N/A — not an error, just nothing to do
+
             try:
                 dump_area(dbg, api_log_file, 'after_ucb')
             except Exception:
@@ -88,8 +107,8 @@ def perform_flash_sequence(dbg, flash_file, program_ucbs_cmm, ucb_config_dir, ap
                 print("----> [阶段 B] UCB 刷写失败！")
                 f.write("// RESULT :: UCB NOK\n")
             else:
-                print("----> [阶段 B] UCB 未执行（跳过或未配置）。")
-                f.write("// RESULT :: UCB N/A\n")
+                print("----> [阶段 B] UCB 无需更新（当前固件不包含 UCB 数据）。")
+                f.write("// RESULT :: UCB N/A (no UCB data in firmware)\n")
 
         print(f"----> 物理烧录全阶段完成！总耗时: {time.time() - start_time:.2f} 秒")
 
