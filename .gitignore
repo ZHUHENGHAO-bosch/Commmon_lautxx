@@ -4,5 +4,8 @@
 # 忽略固件二进制文件
 *.hex
 
-*.cc-hitory/
+# 忽略 VSCode 历史记录
+.cc-history/
 
+# 忽略编译链路笔记文档
+*编译链路的理解.md
