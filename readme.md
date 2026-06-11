@@ -46,11 +46,11 @@ Commmon_lautxx/
 
 > **相同固件烧录**（跳过烧录直接进入稳定性测试）：
 
-[![相同固件烧录效果](image-1.png)](test-Video/相同固件烧录调试效果.mp4)
+<video src="test-Video/相同固件烧录调试效果.mp4" controls width="100%"></video>
 
 > **不同固件烧录**（自动比对 → 擦除烧录 → 重启交互 → 稳定性测试）：
 
-[![不同固件烧录效果](image-2.png)](test-Video/不同固件烧录调试效果.mp4)
+<video src="test-Video/不同固件烧录调试效果.mp4" controls width="100%"></video>
 
 > **log日志输出**：
 
