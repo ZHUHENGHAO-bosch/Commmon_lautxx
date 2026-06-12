@@ -11,5 +11,11 @@
     "BM": {
       "version_string": "0xA0080040"
     }
+  },
+  "CCU": {
+    "APP": {
+      "version_id":     "0x8011449C",
+      "version_string": "0x801144A0"
+    }
   }
 }

@@ -75,6 +75,20 @@ def main():
     _project_name = detect_project_from_path(fw_dir, _project_cfg) or \
                     detect_project_from_path(fw_name, _project_cfg)
 
+    if not _project_name:
+        # 从固件文件名中推测项目名
+        name_stem = os.path.splitext(fw_name)[0]
+        for prefix in ["GM_IDC_", "GM_", "IDC_"]:
+            if name_stem.upper().startswith(prefix.upper()):
+                name_stem = name_stem[len(prefix):]
+                break
+        for suffix in ["_ND_withPP", "_ND_WithPP", "_withPP", "_WithPP", "_ND", "_BL", "_APP"]:
+            if name_stem.upper().endswith(suffix.upper()):
+                name_stem = name_stem[:-len(suffix)]
+                break
+        if name_stem and not name_stem.upper().startswith("TC"):
+            _project_name = name_stem
+
     if _project_name:
         print(f"[INFO] \033[96m项目: {_project_name}\033[0m")
 
