@@ -1,0 +1,168 @@
+// ===================================================
+// TRACE32 Python API Execution Log (Standalone Framework)
+// Date: 2026-06-12 13:57:12
+// Architecture: TRICORE
+// Target Firmware: C:/ProjectCode/Build_CCU/Output_GM_CCU_APP_TC387Q_debug/SoftwarePackets/Hex_Files/GM_CCU_withPP.hex
+// Project: None
+// Firmware Version: [APP] | ID=0x24782720 | Version="6VB.185.4.112"
+// ===================================================
+
+CMD :: SYStem.RESet
+CMD :: SYStem.DETECT CPU
+CMD :: SYStem.CPU TC387QP
+CMD :: DO "C:/ProjectCode/Commmon_lautxx/laut-common/Tools/laut-tc3xx-VCUPLUS/tc3x7/TargetAutoDetect.cmm" CPU=TC387QP
+// INFO :: demo flash script ~~/demo/tricore/flash/tc38x.cmm exists: True
+CMD :: DO "~~/demo/tricore/flash/tc38x.cmm" CPU=TC387QP PREPAREONLY
+// INFO :: Skipped redundant FLASH probe commands to match original tc39x.cmm
+CMD :: SYStem.Mode.Down
+CMD :: SYStem.CONFIG DEBUGPORTTYPE DAP2
+CMD :: SYStem.JtagClock 30.MHz
+CMD :: SYStem.Mode.Up
+CMD :: System.MemAccess CPU
+CMD :: Data.LOAD.auto "C:/ProjectCode/Build_CCU/Output_GM_CCU_APP_TC387Q_debug/SoftwarePackets/Hex_Files/GM_CCU_withPP.hex" /DIFF /SingleLineAdjacent
+CMD :: SYStem.Option.RESETMODE PORST
+CMD :: SYStem.RESetTarget
+CMD :: SYStem.Up
+CMD :: AREA.SAVE A000 "C:/Users/UZE6SZH/AppData/Local/Temp/t32_area_A000_after_reset_1781243843.txt"
+// AREA RAW [after_reset] (AREA.SAVE method)
+// AREA DUMP [after_reset] start
+// AREA [A000] content:
+\ucbName[35]="OTP3_COPY" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbAddr[35]="0xAF405600" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbFlashConfirmStatusReg[35]="0xF8040028" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbConfirmMask[35]="0x00800080" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbName[36]="OTP4_COPY" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbAddr[36]="0xAF405800" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbFlashConfirmStatusReg[36]="0xF8040028" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbConfirmMask[36]="0x02000200" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbName[37]="OTP5_COPY" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbAddr[37]="0xAF405A00" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbFlashConfirmStatusReg[37]="0xF8040028" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbConfirmMask[37]="0x08000800" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbName[38]="OTP6_COPY" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbAddr[38]="0xAF405C00" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbFlashConfirmStatusReg[38]="0xF8040028" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbConfirmMask[38]="0x20002000" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbName[39]="OTP7_COPY" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbAddr[39]="0xAF405E00" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbFlashConfirmStatusReg[39]="0xF8040028" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+\ucbConfirmMask[39]="0x80008000" = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded. 8798144 bytes dropped.
+target reset
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU.out' (ELF/DWARF2) loaded.
+target reset detected
+Warning: soft reset detected
+reset source: bus reset
+wrong parameter type : expected  ADDRESS
+target power fail
+TC389Q detected
+no port sharing detected: nBGRANT asserted although nBREQ is released
+TC387QP detected
+no port sharing detected: nBGRANT asserted although nBREQ is released
+TC389Q detected
+no port sharing detected: nBGRANT asserted although nBREQ is released
+TC387QP detected
+no port sharing detected: nBGRANT asserted although nBREQ is released
+Identified CPU = TC387QP with 4. cores
+loading IntelHex
+file 'C:\ProjectCode\Build_CCU\Output_GM_CCU_APP_TC387Q_debug\SoftwarePackets\Hex_Files\GM_CCU_withPP.hex' (IntelHex) loaded.
+target reset
+
+// AREA DUMP [after_reset] end
+CMD :: Data.LOAD.Elf "C:/ProjectCode/Build_CCU/Output_GM_CCU_APP_TC387Q_debug/SoftwarePackets/Hex_Files/GM_CCU.out" /NoCODE
+CMD :: SYStem.Option DUALPORT ON
+CMD :: Go
+// INFO :: Stability monitoring started, duration=180s
+// STABILITY :: initial check -> RUNNING
+// STABILITY :: OK second=1 RUN=True
+// STABILITY :: OK second=2 RUN=True
+// STABILITY :: OK second=3 RUN=True
+// STABILITY :: OK second=4 RUN=True
+// STABILITY :: OK second=5 RUN=True
+// STABILITY :: OK second=6 RUN=True
+// STABILITY :: OK second=7 RUN=True
+// STABILITY :: OK second=8 RUN=True
+// STABILITY :: OK second=9 RUN=True
+// STABILITY :: OK second=10 RUN=True
+// INFO :: heartbeat 10/180
+// STABILITY :: OK second=11 RUN=True
+// STABILITY :: OK second=12 RUN=True
