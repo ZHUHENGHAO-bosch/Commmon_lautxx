@@ -46,11 +46,11 @@ Commmon_lautxx/
 
 > **相同固件烧录**（跳过烧录直接进入稳定性测试）：
 
-<video src="test-Video/相同固件烧录调试效果.mp4" controls width="100%"></video>
+[相同固件烧录调试效果.mp4](https://bosch-my.sharepoint.com/:v:/p/uze6szh/IQBLqrsa99fWQ5-6UJ20ZgKeAaDBRSmRNQUsmZGVdjpWYoU?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=0AwlO3)
 
 > **不同固件烧录**（自动比对 → 擦除烧录 → 重启交互 → 稳定性测试）：
 
-<video src="test-Video/不同固件烧录调试效果.mp4" controls width="100%"></video>
+[不同固件烧录调试效果.mp4](https://bosch-my.sharepoint.com/:v:/p/uze6szh/IQD3UdQ_yAlqTovv_h1HIJQ4AScSLzKsbl1RgF5oJs3Fr3Y?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=DDbCXA)
 
 > **log日志输出**：
 
